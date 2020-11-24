@@ -56,12 +56,18 @@ public class SimonPattern {
 		for(Integer i: pattern) {
 			JButton current = SimonGUI.instance.getButton(i);
 			Color original = current.getBackground();
+			
+			// darken to show button pattern
 			current.setBackground(original.darker());
+			
+			SimonGUI.playButtonSound(i); // play button sound
 			try {
 				Thread.sleep(ANIMATION_DELAY);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			
+			// reset to original
 			current.setBackground(original);
 			try {
 				Thread.sleep(ANIMATION_DELAY);

@@ -47,17 +47,22 @@ public class SimonGUI {
 	// users answers
 	private ArrayList<Integer> userPick;
 
+	private static SoundHandler sounds;
+
 	// create GUI for game
 	public SimonGUI() {
 		// set the instance of this class to this object
 		instance = this;
-		
+
+		// create soundhandler
+		sounds = new SoundHandler();
+
 		// initial score is 0
 		score = 0;
 
 		// users list of button presses
 		userPick = new ArrayList<Integer>();
-		
+
 		// create and initialize GUI elements
 		createFrame();
 		createStartButton();
@@ -191,7 +196,8 @@ public class SimonGUI {
 	}
 
 	/**
-	 * set a panel to be the ative panel on the frame
+	 * set a panel to be the active panel on the frame
+	 * 
 	 * @param panel
 	 */
 	public void setActivePanel(JPanel panel) {
@@ -204,6 +210,7 @@ public class SimonGUI {
 
 	/**
 	 * returns the button for each corresponding number
+	 * 
 	 * @param num (corresponding button number)
 	 * @return corresponding button
 	 */
@@ -223,13 +230,42 @@ public class SimonGUI {
 	}
 
 	/**
-	 * add user selection to their list of picks and check if their button press was correct
-	 * update score and GUI if correct and continue animation
-	 * otherwise game is over reset everything
+	 *  play correct button sound for each button
+	 * @param num (corresponding button number)
+	 */
+	public static void playButtonSound(int num) {
+		switch(num) {
+		case 0:
+			sounds.playButton1();
+			break;
+		case 1:
+			sounds.playButton2();
+			break;
+		case 2:
+			sounds.playButton3();
+			break;
+		case 3:
+			sounds.playButton4();
+			break;
+		default:
+			break;
+		}
+	}
+
+	/**
+	 * add user selection to their list of picks and check if their button press was
+	 * correct update score and GUI if correct and continue animation otherwise game
+	 * is over reset everything
+	 * 
 	 * @param num (corresponding button number)
 	 */
 	public void onButtonPress(int num) {
+		playButtonSound(num); // play button sound on click
+		
+		// add user choice
 		userPick.add(num);
+		
+		// check user choice
 		if (check()) {
 			if (userPick.size() == pattern.getPattern().size()) {
 				score += 1;
@@ -239,8 +275,14 @@ public class SimonGUI {
 				startAnimation();
 			}
 		} else {
+			// play gameover sound
+			sounds.playGameover();
+
+			// reset user choices and pattern
 			userPick.clear();
 			pattern.getPattern().clear();
+			
+			// ask to play again
 			int result = JOptionPane.showConfirmDialog(frame,
 					"GAME OVER\nSCORE: " + score + "\n Would you like to play again?");
 			if (result == JOptionPane.YES_OPTION) {
@@ -248,8 +290,7 @@ public class SimonGUI {
 				scoreLabel.setText("SCORE: " + score);
 				pattern.addNext();
 				startAnimation();
-			}
-			else {
+			} else {
 				System.exit(0);
 			}
 		}
@@ -257,12 +298,13 @@ public class SimonGUI {
 
 	/**
 	 * check if current click is correct in the pattern
+	 * 
 	 * @return true if click was correct, false otherwise
 	 */
 	public boolean check() {
 		return userPick.get(userPick.size() - 1) == pattern.getPattern().get(userPick.size() - 1);
 	}
-	
+
 	/**
 	 * Runs Simon animation
 	 */
@@ -280,8 +322,9 @@ public class SimonGUI {
 	}
 
 	/**
-	 * ActionListener specifically for start button
-	 * switches panels and starts animation
+	 * ActionListener specifically for start button switches panels and starts
+	 * animation
+	 * 
 	 * @author kkcoo
 	 *
 	 */
